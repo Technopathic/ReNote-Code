@@ -11,6 +11,7 @@ ReNote is a note-taking app geared towards programmers and engineers. In my comp
 ##Downloads
 
 [Windows](https://github.com/Technopathic/ReNote/releases/download/0.1.0/renote-v0.1.0-win32-x64.exe)
+
 [Mac](https://github.com/Technopathic/ReNote/releases/download/0.1.0/renote-v0.1.0-darwin-x64.dmg)
 
 ## Requirements for Building
