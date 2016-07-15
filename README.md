@@ -8,7 +8,10 @@ ReNote is a note-taking app geared towards programmers and engineers. In my comp
 ![Screenshot Two](http://h4z.it/Image/219a52_ScreenTwo.PNG "Screenshot Two")
 ![Screenshot Three](http://h4z.it/Image/a4dbdf_Screen3.PNG "Screenshot Three")
 
-##Download
+##Downloads
+
+[Windows](https://github.com/Technopathic/ReNote/releases/download/0.1.0/renote-v0.1.0-win32-x64.exe)
+[Mac](https://github.com/Technopathic/ReNote/releases/download/0.1.0/renote-v0.1.0-darwin-x64.dmg)
 
 ## Requirements for Building
 NodeJS v4.4.3+
