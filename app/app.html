@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ng-controller="MainController">
+<head>
+    <!-- meta stuff -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1" />
+
+    <link rel="stylesheet" href="node_modules/angular-material/angular-material.min.css">
+    <link rel='stylesheet prefetch' href="node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="node_modules/angular-xeditable/dist/css/xeditable.min.css">
+    <link rel="stylesheet" type="text/css" href="css/{{activeTheme.theme}}.css">
+    <title>ReNote</title>
+</head>
+
+<!-- MainController binds body tag scope -->
+<body layout="column">
+
+    <div layout="column" id="content" flex>
+      <ng-view layout="column" flex></ng-view>
+    </div>
+
+    <!-- AngularJS -->
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script type="text/javascript" src="js/electangular.js"></script>
+    <script src="node_modules/angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="node_modules/angular-route/angular-route.min.js"></script>
+    <script src="node_modules/angular-animate/angular-animate.min.js"></script>
+    <script src="node_modules/angular-aria/angular-aria.min.js"></script>
+    <script src="node_modules/angular-material/angular-material.min.js"></script>
+    <script src="node_modules/angular-xeditable/dist/js/xeditable.min.js"></script>
+
+    <script src="node_modules/showdown/dist/showdown.min.js"></script>
+    <script src="node_modules/ng-showdown/dist/ng-showdown.min.js"></script>
+
+    <script src="node_modules/ace-builds/src-min-noconflict/ace.js"></script>
+    <script src="node_modules/angular-ui-ace/src/ui-ace.js"></script>
+    <script src="node_modules/ace-builds/src-min-noconflict/ext-emmet.js"></script>
+    <script src="node_modules/emmet/lib/emmet.js"></script>
+
+    <!-- AngularJS app js entry point -->
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/routes.js"></script>
+    <script type="text/javascript" src="js/controllers.js"></script>
+
+</body><!-- MainController -->
+</html>

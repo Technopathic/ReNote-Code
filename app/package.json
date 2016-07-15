@@ -1,0 +1,39 @@
+{
+  "name": "renote",
+  "productName": "ReNote",
+  "description": "A note-taking app for programmers.",
+  "version": "0.1.0",
+  "author": "Technopathic",
+  "copyright": "© 2016, Technopathic",
+  "main": "background.js",
+  "dependencies": {
+    "fs-jetpack": "^0.9.0"
+  },
+  "packageNameTemplate": "{{name}}-v{{version}}-{{platform}}-{{arch}}",
+  "osx": {
+    "build": "1",
+    "identifier": "com.technopathic.renote",
+    "LSApplicationCategoryType": "public.app-category.productivity",
+    "//codeSignIdentitiy": {
+      "dmg": "Developer ID Application: Company Name (APPIDENTITY)",
+      "MAS": "3rd Party Mac Developer Application: Company Name (APPIDENTITY)",
+      "MASInstaller": "3rd Party Mac Developer Installer: Company Name (APPIDENTITY)"
+    }
+  },
+  "devDependencies": {
+    "ace-builds": "^1.2.2",
+    "angular": "^1.5.7",
+    "angular-animate": "^1.5.7",
+    "angular-aria": "^1.5.7",
+    "angular-material": "^1.1.0-rc.5",
+    "angular-route": "^1.5.7",
+    "angular-sanitize": "^1.5.7",
+    "angular-ui-ace": "^0.2.3",
+    "angular-xeditable": "^0.2.0",
+    "diskdb": "^0.1.15",
+    "emmet": "^1.6.0",
+    "font-awesome": "^4.6.3",
+    "ng-showdown": "^1.1.0",
+    "showdown": "^1.4.2"
+  }
+}

@@ -1,0 +1,449 @@
+<div layout="column" flex>
+  <div layout="row">
+    <div class="columnContainer columnOne border-right" layout="column" layout-fill flex="25" flex-sm="25" flex-xs="100" flex-gt-md="15" ng-if="layout.columns == 3">
+      <div class="columnHeader">
+        <md-button class="leftHeaderIcon md-icon-button" ng-click="newNotebook($event)" ><i class="fa fa-plus"></i></md-button>
+        <md-button class="headerTitle">Library</md-button>
+      </div>
+      <div class="columnMain">
+        <div class="libraryContainer">
+          <ul>
+            <li>
+              <a href="" ng-class="activeNotebook == 'Bookmarks' ? 'active' : ''" ng-click="getBookmarks()" ><i class="fa fa-bookmark-o"></i>Bookmarks<span class="secondaryList">{{notebookCount.bookmarks}}</span></a>
+            </li>
+            <li>
+              <a href="" ng-class="activeNotebook == 'Recent' ? 'active' : ''" ng-click="getRecent()" ><i class="fa fa-clock-o"></i>Recent<span class="secondaryList">{{notebookCount.recent}}</span></a>
+            </li>
+            <li>
+              <a href="" ng-class="activeNotebook == 'Trash' ? 'active' : ''" ng-click="getTrash()"><i class="fa fa-trash-o"></i>Trash<span class="secondaryList">{{notebookCount.trash}}</span></a>
+            </li>
+            <li>
+              <a href="" ng-class="activeNotebook == 'All Notes' ? 'active' : ''" ng-click="getAllNotes()" ><i class="fa fa-globe"></i>All Notes<span class="secondaryList">{{notebookCount.allNotes}}</span></a>
+            </li>
+          </ul>
+        </div>
+        <div class="notebookContainer">
+          <ul ng-if="activeNotebook == 'Trash' || selectNotebook.notebookTrash == 1">
+            <p class="containerTitle">Trash Notebooks</p>
+            <li ng-repeat="notebook in trashNotebooks | orderBy:'-notebookDate'" >
+              <a href="" ng-class="activeNotebook == notebook._id ? 'active' : ''" ng-click="getPages(notebook._id)"><i class="fa fa-book"></i>{{notebook.notebookName}}<span class="secondaryList">{{notebook.notebookPages}}</span></a>
+              <md-tooltip md-direction="down">
+                Created: {{notebook.notebookDate | date:'short' }}
+                Modified: {{notebook.notebookModified | date:'short' }}
+              </md-tooltip>
+            </li>
+          </ul>
+          <p class="containerTitle">Notebooks</p>
+          <ul>
+            <li ng-repeat="notebook in notebooks | orderBy:'-notebookDate'" >
+              <a href="" ng-class="activeNotebook == notebook._id ? 'active' : ''" ng-click="getPages(notebook._id)"><i class="fa fa-book"></i>{{notebook.notebookName}}<span class="secondaryList">{{notebook.notebookPages}}</span></a>
+              <md-tooltip md-direction="down">
+                Created: {{notebook.notebookDate | date:'short' }}
+                Modified: {{notebook.notebookModified | date:'short' }}
+              </md-tooltip>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="columnContainer columnTwo border-right" layout="column" layout-fill flex="30" flex-sm="30" flex-xs="100" flex-gt-md="20" ng-if="layout.columns == 3">
+      <div class="columnHeader">
+        <md-button class="leftHeaderIcon md-icon-button" ng-click="addPage(selectNotebook._id)"><i class="fa fa-plus"></i></md-button>
+        <md-menu>
+          <md-button class="headerTitle" editable-text="selectNotebook.notebookName" ng-click="openMenu($mdOpenMenu,$event)" e-form="notebookRename" onbeforesave="saveNotebookName($data, selectNotebook._id)" buttons="no">{{selectNotebook.notebookName || 'Empty'}}</md-button>
+          <md-menu-content width="4">
+            <md-menu-item>
+              <md-button ng-click="sortPages('pageTitle')">
+                <i class="fa fa-sort-alpha-asc"></i> Sort by Name
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="sortPages('pageDate')">
+                <i class="fa fa-sort-numeric-asc"></i> Sort by Creation Date
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="sortPages('pageModified')">
+                <i class="fa fa-sort-numeric-asc"></i> Sort by Modified Date
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item ng-if="selectNotebook.notebookTrash != 1 && selectNotebook.id != 0">
+              <md-button ng-click="addPage(selectNotebook._id)">
+                <i class="fa fa-plus"></i> New Page
+              </md-button>
+            </md-menu-item>
+            <md-menu-item ng-if="selectNotebook.notebookTrash != 1 && selectNotebook.id != 0">
+              <md-button ng-click="notebookRename.$show()" ng-hide="notebookRename.$visible">
+                <i class="fa fa-font"></i> Rename
+              </md-button>
+            </md-menu-item>
+            <md-menu-item ng-if="selectNotebook.id != 0 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="deleteNotebook(selectNotebook._id)">
+                <i class="fa fa-trash-o"></i> Delete Notebook
+              </md-button>
+            </md-menu-item>
+            <md-menu-item ng-if="selectNotebook.notebookTrash == 1 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="restoreNotebook(selectNotebook._id)">
+                <i class="fa fa-backward"></i> Restore
+              </md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+        <div class="clearFix"></div>
+        <div class="headerSort"></div>
+      </div>
+      <div class="columnMain">
+        <div class="topicContainer">
+          <a class="topic" ng-repeat="page in pages | filter:pageSearch" ng-class="activePage == page._id ? 'active' : ''" ng-click="selectPage(page._id)">
+            <span editable-text="page.pageTitle" onbeforesave="savePageName($data, page._id)" buttons="no" class="topicTitle">{{page.pageTitle || 'Empty'}}</span>
+            <br/>
+            <span class="topicDate">
+              {{page.pageDate | date:'short' }}
+              <md-tooltip md-direction="right">
+                Modified: {{page.pageModified | date:'short' }}
+              </md-tooltip>
+            </span>
+            <span class="topicDate" ng-if="activeNotebook == 'Recent' || activeNotebook == 'All Notes' || activeNotebook == 'Trash'">
+              <i class="fa fa-book"></i> {{page.pageNotebook}}
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="columnContainer columnThree" layout="column" layout-fill flex="45" flex-sm="45" flex-xs="100" flex-gt-md="65" ng-if="layout.columns == 3">
+      <div class="columnHeader">
+        <md-menu>
+          <md-button class="leftHeaderIcon md-icon-button" ng-click="openMenu($mdOpenMenu,$event)"><i class="fa fa-bars"></i></md-button>
+          <md-menu-content width="4">
+            <md-menu-item ng-if="selectNotebook.id != 0 && pageData.pageTrash != 1">
+              <md-button ng-click="savePage()">
+                <i class="fa fa-floppy-o"></i> Save
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 3">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 1
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 2">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 2
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 1">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 3
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item ng-if="selectNotebook.id != 0 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="deletePage(pageData._id)">
+                <i class="fa fa-trash-o"></i> Delete Page
+              </md-button>
+            </md-menu-item>
+            <md-menu-item ng-if="pageData.pageTrash == 1 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="restorePage(pageData._id)">
+                <i class="fa fa-backward"></i> Restore Page
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item>
+              <md-button ng-click="switchTheme()">
+                <i ng-show="activeTheme.theme == 'Dark'" class="fa fa-sun-o"></i><i ng-show="activeTheme.theme == 'Light'" class="fa fa-moon-o"></i> Switch Theme
+              </md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+        <div class="headerBar">
+          <div class="buttonBar" layout="row" ng-if="pageData.pageTrash != 1 && activeNotebook != 'Trash'">
+            <a href="" ng-class="activeView == 'Edit' ? 'active' : ''" ng-click="getView('Edit')" class="switchLeft"><i class="fa fa-pencil"></i></a>
+            <a href="" ng-class="activeView == 'View' ? 'active' : ''" ng-click="getView('View')" class="switchCenter"><i class="fa fa-eye"></i></a>
+            <a href="" ng-class="activeView == 'Code' ? 'active' : ''" ng-click="getView('Code')" class="switchRight"><i class="fa fa-terminal"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="columnMain">
+        <div class="mainContainer">
+          <div class="mainHeader">
+            <h2>{{pageData.pageTitle}}</h2>
+          </div>
+          <div ng-if="activeView == 'View' && pageData.pageBody != NULL" class="mainBody">
+            <div class="viewContent" markdown-to-html="pageData.pageBody"></div>
+          </div>
+          <div ng-if="activeView == 'Edit'" ng-model="pageData.pageBody" class="mainBody editContainer">
+            <textarea ng-model="pageData.pageBody" autofocus="true" ng-blur='silentSave()'></textarea>
+          </div>
+          <div ng-if="activeView == 'Code'" ta-bind="pageData.pageBody" class="mainBody">
+            <div ui-ace="{useWrapMode : true, showPrintMargin:false, theme:activeTheme.editor, mode:activeLanguage.language, require: ['ace/ext/emmet'], advanced: { enableEmmet: true}}" ng-model="pageData.pageCode"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columnContainer columnThree" layout="column" layout-fill flex="50" ng-if="layout.columns == 2">
+      <div class="columnHeader">
+        <md-menu>
+          <md-button class="leftHeaderIcon md-icon-button" ng-click="openMenu($mdOpenMenu,$event)"><i class="fa fa-bars"></i></md-button>
+          <md-menu-content width="4">
+            <md-menu-item ng-if="selectNotebook.id != 0 && selectNotebook.notebookTrash != 1">
+              <md-button ng-click="savePage()">
+                <i class="fa fa-floppy-o"></i> Save
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 3">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 1
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 2">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 2
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 1">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 3
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item ng-if="selectNotebook.id != 0 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="deletePage(pageData._id)">
+                <i class="fa fa-trash-o"></i> Delete Page
+              </md-button>
+            </md-menu-item>
+            <md-menu-item ng-if="pageData.pageTrash == 1 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="restorePage(pageData._id)">
+                <i class="fa fa-backward"></i> Restore Page
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item>
+              <md-button ng-click="switchTheme()">
+                <i ng-show="activeTheme.theme == 'Dark'" class="fa fa-sun-o"></i><i ng-show="activeTheme.theme == 'Light'" class="fa fa-moon-o"></i> Switch Theme
+              </md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+        <div class="headerBar">
+          <div class="buttonBar" layout="row" ng-if="pageData.pageTrash != 1 && activeNotebook != 'Trash'">
+            <a href="" ng-class="activeView == 'Edit' ? 'active' : ''" ng-click="getView('Edit')" class="switchLeft"><i class="fa fa-pencil"></i></a>
+            <a href="" ng-class="activeView == 'View' ? 'active' : ''" ng-click="getView('View')" class="switchCenter"><i class="fa fa-eye"></i></a>
+            <a href="" ng-class="activeView == 'Code' ? 'active' : ''" ng-click="getView('Code')" class="switchRight"><i class="fa fa-terminal"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="columnMain">
+        <div class="mainContainer">
+          <div class="mainHeader">
+            <h2>{{pageData.pageTitle}}</h2>
+          </div>
+          <div ng-if="activeView == 'View' && pageData.pageBody != NULL" class="mainBody">
+            <div class="viewContent" markdown-to-html="pageData.pageBody"></div>
+          </div>
+          <div ng-if="activeView == 'Edit'" ng-model="pageData.pageBody" class="mainBody editContainer">
+            <textarea ng-model="pageData.pageBody" autofocus="true" ng-blur='silentSave()'></textarea>
+          </div>
+          <div ng-if="activeView == 'Code'" ta-bind="pageData.pageBody" class="mainBody">
+            <div ui-ace="{useWrapMode : true, showPrintMargin:false, theme:activeTheme.editor, mode: activeLanguage.language, require: ['ace/ext/emmet'], advanced: { enableEmmet: true}}" ng-model="pageData.pageCode"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <md-divider></md-divider>
+    <div class="columnContainer columnThree" layout="column" layout-fill flex="50" ng-if="layout.columns == 2">
+      <div class="columnHeader">
+      </div>
+      <div class="columnMain">
+        <div class="mainContainer">
+          <div class="mainHeader">
+            <h2>{{pageData.pageTitle}}</h2>
+          </div>
+          <div ng-if="pageData.pageBody != NULL" class="mainBody">
+            <div class="viewContent" markdown-to-html="pageData.pageBody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columnContainer columnThree" layout="column" layout-fill flex="100" ng-if="layout.columns == 1">
+      <div class="columnHeader">
+        <md-menu>
+          <md-button class="leftHeaderIcon md-icon-button" ng-click="openMenu($mdOpenMenu,$event)"><i class="fa fa-bars"></i></md-button>
+          <md-menu-content width="4">
+            <md-menu-item ng-if="selectNotebook.id != 0 && selectNotebook.notebookTrash != 1">
+              <md-button ng-click="savePage()">
+                <i class="fa fa-floppy-o"></i> Save
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 3">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 1
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 2">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 2
+              </md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="layout.columns = 1">
+                <i class="fa fa-columns" aria-hidden="true"></i> Layout 3
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item ng-if="selectNotebook.id != 0 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="deletePage(pageData._id)">
+                <i class="fa fa-trash-o"></i> Delete Page
+              </md-button>
+            </md-menu-item>
+            <md-menu-item ng-if="pageData.pageTrash == 1 && activeNotebook != 'Bookmarks' && activeNotebook != 'Recent' && activeNotebook != 'All Notes'">
+              <md-button ng-click="restorePage(pageData._id)">
+                <i class="fa fa-backward"></i> Restore Page
+              </md-button>
+            </md-menu-item>
+            <md-divider></md-divider>
+            <md-menu-item>
+              <md-button ng-click="switchTheme()">
+                <i ng-show="activeTheme.theme == 'Dark'" class="fa fa-sun-o"></i><i ng-show="activeTheme.theme == 'Light'" class="fa fa-moon-o"></i> Switch Theme
+              </md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+        <div class="headerBar">
+          <div class="buttonBar" layout="row" ng-if="pageData.pageTrash != 1 && activeNotebook != 'Trash'">
+            <a href="" ng-class="activeView == 'Edit' ? 'active' : ''" ng-click="getView('Edit')" class="switchLeft"><i class="fa fa-pencil"></i></a>
+            <a href="" ng-class="activeView == 'View' ? 'active' : ''" ng-click="getView('View')" class="switchCenter"><i class="fa fa-eye"></i></a>
+            <a href="" ng-class="activeView == 'Code' ? 'active' : ''" ng-click="getView('Code')" class="switchRight"><i class="fa fa-terminal"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="columnMain">
+        <div class="mainContainer">
+          <div class="mainHeader">
+            <h2>{{pageData.pageTitle}}</h2>
+          </div>
+          <div ng-if="activeView == 'View' && pageData.pageBody != NULL" class="mainBody">
+            <div class="viewContent" markdown-to-html="pageData.pageBody"></div>
+          </div>
+          <div ng-if="activeView == 'Edit'" ng-model="pageData.pageBody" class="mainBody editContainer">
+            <textarea ng-model="pageData.pageBody" autofocus="true" ng-blur='silentSave()'></textarea>
+          </div>
+          <div ng-if="activeView == 'Code'" ta-bind="pageData.pageBody" class="mainBody">
+            <div ui-ace="{useWrapMode : true, showPrintMargin:false, theme:activeTheme.editor, mode: activeLanguage.language, require: ['ace/ext/emmet'], advanced: { enableEmmet: true}}" ng-model="pageData.pageCode"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer layout="row" class="columnFooter">
+    <div class="columnContainer columnOne border-right" layout="column" layout-fill flex="25" flex-sm="25" flex-gt-md="15" ng-if="layout.columns == 3">
+        <md-button ng-click="newNotebook($event)"  flex="100"  flex-gt-md="auto">
+          <i class="fa fa-plus"></i><span> New Notebook</span>
+        </md-button>
+    </div>
+    <div class="columnContainer columnTwo border-right" layout="column" layout-fill flex="30" flex-sm="30" flex-gt-md="20" ng-if="layout.columns == 3">
+      <div layout="row" layout-align="center center">
+        <input class="pageFilter" ng-model="$parent.pageSearch" type="text" placeholder="Filter by keyword, title, or #tag"/>
+      </div>
+    </div>
+    <div class="columnContainer columnThree" layout="row" layout-align="space-between center" layout-fill flex="45" flex-sm="45" flex-gt-md="65" ng-if="layout.columns == 3">
+      <div class="leftFooterIcon">
+        <md-button class="md-icon-button" ng-click="previousPage()">
+          <i class="fa fa-chevron-left"></i>
+        </md-button>
+        <md-button class="md-icon-button" ng-click="nextPage()">
+          <i class="fa fa-chevron-right"></i>
+        </md-button>
+      </div>
+      <div class="rightFooterIcon">
+        <md-input-container ng-if="activeView == 'Code'">
+          <md-select ng-model="activeLanguage.language">
+            <md-option ng-repeat="language in languages" value="{{language.languageSyntax}}">
+              {{language.languageName}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-button class="md-icon-button" ng-click="setBookmark(pageData._id);"><i ng-if="pageData.pageStarred == '0'"class="fa fa-bookmark-o"></i><i ng-if="pageData.pageStarred == '1'"class="fa fa-bookmark"></i></md-button>
+      </div>
+    </div>
+
+    <div class="columnContainer columnThree" layout="row" layout-align="space-between center" layout-fill flex="50" ng-if="layout.columns == 2">
+      <div class="leftFooterIcon">
+        <md-button class="md-icon-button" ng-click="previousPage()">
+          <i class="fa fa-chevron-left"></i>
+        </md-button>
+        <md-button class="md-icon-button" ng-click="nextPage()">
+          <i class="fa fa-chevron-right"></i>
+        </md-button>
+      </div>
+      <div class="rightFooterIcon">
+        <md-input-container ng-if="activeView == 'Code'">
+          <md-select ng-model="activeLanguage.language">
+            <md-option ng-repeat="language in languages" value="{{language.languageSyntax}}">
+              {{language.languageName}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-button class="md-icon-button" ng-click="setBookmark(pageData._id);"><i ng-if="pageData.pageStarred == '0'"class="fa fa-bookmark-o"></i><i ng-if="pageData.pageStarred == '1'"class="fa fa-bookmark"></i></md-button>
+      </div>
+    </div>
+
+    <div class="columnContainer columnThree" layout="row" layout-align="space-between center" layout-fill flex="100" ng-if="layout.columns == 1">
+      <div class="leftFooterIcon">
+        <md-button class="md-icon-button" ng-click="previousPage()">
+          <i class="fa fa-chevron-left"></i>
+        </md-button>
+        <md-button class="md-icon-button" ng-click="nextPage()">
+          <i class="fa fa-chevron-right"></i>
+        </md-button>
+      </div>
+      <div class="rightFooterIcon">
+        <md-input-container ng-if="activeView == 'Code'">
+          <md-select ng-model="activeLanguage.language">
+            <md-option ng-repeat="language in languages" value="{{language.languageSyntax}}">
+              {{language.languageName}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-button class="md-icon-button" ng-click="setBookmark(pageData._id);"><i ng-if="pageData.pageStarred == '0'"class="fa fa-bookmark-o"></i><i ng-if="pageData.pageStarred == '1'"class="fa fa-bookmark"></i></md-button>
+      </div>
+    </div>
+  </footer>
+</div>
+
+
+<script type="text/ng-template" id="newNotebook.tmpl.html">
+  <md-dialog aria-label="New Notebook" ng-cloak class="newNotebookDialog">
+    <form>
+      <md-toolbar>
+        <div class="md-toolbar-tools newNotebookDialog">
+          <h2>New Notebook</h2>
+          <span flex></span>
+          <md-button class="md-icon-button" ng-click="cancel()">
+
+          </md-button>
+        </div>
+      </md-toolbar>
+      <md-dialog-content>
+        <div class="md-dialog-content">
+          <div layout-gt-sm="column">
+            <md-input-container class="md-block" flex-gt-sm>
+              <label>Notebook Name</label>
+              <input ng-model="newNotebook.notebookName" id="newNotebookName" ng-minlength="1" ng-maxlength="32" required>
+            </md-input-container>
+          </div>
+        </div>
+      </md-dialog-content>
+      <md-dialog-actions layout="row" layout-align="end end">
+        <md-button ng-click="addNotebook()">Confirm</md-button>
+        <md-button ng-click="closeDialog()">Close</md-button>
+      </md-dialog-actions>
+    </form>
+  </md-dialog>
+</script>
