@@ -3,12 +3,12 @@
 ## Description
 ReNote is a note-taking app geared towards programmers and engineers. In my computer science classes, I'd always have an annoying time taking programming notes. I mean, sure I could write the notes by hand, but I'm not a caveman.
 
-##Screenshots
+## Screenshots
 ![Screenshot One](http://h4z.it/Image/1cfe9a_ScreenOne.PNG "Screenshot One")
 ![Screenshot Two](http://h4z.it/Image/219a52_ScreenTwo.PNG "Screenshot Two")
 ![Screenshot Three](http://h4z.it/Image/a4dbdf_Screen3.PNG "Screenshot Three")
 
-##Downloads
+## Downloads
 
 [Windows](https://github.com/Technopathic/ReNote/releases/download/0.1.0/renote-v0.1.0-win32-x64.exe)
 
